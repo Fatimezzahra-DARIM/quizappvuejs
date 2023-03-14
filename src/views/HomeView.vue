@@ -10,12 +10,15 @@
         <!-- Score container -->
         <div class="text-right text-gray-800">
           <p class="text-sm loading-3">Score</p>
-          <p class="font-bold">60</p>
+          <p class="font-bold">{{ score }}</p>
         </div>
         <!-- <p>para Test</p> -->
         <!-- Timer container -->
         <div class="bg-white shadow-lg p-1 rounded-full w-full h-5 mt-4">
-          <div class="bg-blue-700 rounded-full w-11/12 h-full"></div>
+          <div
+            class="bg-blue-700 rounded-full w-11/12 h-full"
+            :style="`width:${timer}%`"
+          ></div>
         </div>
         <!-- Question container  -->
         <div
@@ -86,7 +89,9 @@
         <!-- Progress indicator container -->
         <div class="mt-8 text-center">
           <div class="h-1 w-12 bg-gray-800 rounded-full mx-auto"></div>
-          <p class="font-bold text-gray-800">2/10</p>
+          <p class="font-bold text-gray-800">
+            {{ questionCounter }}/{{ questions.length }}
+          </p>
         </div>
       </div>
     </div>
@@ -109,7 +114,9 @@ export default {
   setup() {
     //data
     let canClick = true;
+    let timer = ref(100);
     let questionCounter = ref(0);
+    let score = ref(0);
     const currentQuestion = ref({
       question: "",
       answer: 1,
@@ -137,6 +144,7 @@ export default {
       //check if there are more questions to load
       if (questions.length > questionCounter.value) {
         // load question
+        timer.value = 100;
         currentQuestion.value = questions[questionCounter.value];
         console.log("current ques", currentQuestion.value);
         questionCounter.value++;
@@ -167,6 +175,7 @@ export default {
         const divContainer = itemsRef[item];
         const optionID = item + 1;
         if (currentQuestion.value.answer == optionID) {
+          score.value += 10;
           console.log("y r correct");
           divContainer.classList.add("option-correct");
           divContainer.classList.remove("option-default");
@@ -175,6 +184,7 @@ export default {
           divContainer.classList.add("option-wrong");
           divContainer.classList.remove("option-default");
         }
+        timer.value = 100;
         canClick = false;
         console.log(choice, item);
         //go next qst
@@ -184,14 +194,27 @@ export default {
         console.log("can't select option");
       }
     };
+    const countDownTimer = function () {
+      let interVal = setInterval(() => {
+        if (timer.value > 0) {
+          timer.value--;
+        } else {
+          console.log("timer up");
+          clearInterval(interVal);
+        }
+      }, 150);
+    };
     //lifecycle hooks
     onMounted(() => {
       loadQuestion();
+      countDownTimer();
     });
     //return
     return {
+      timer,
       currentQuestion,
       questions,
+      score,
       questionCounter,
       loadQuestion,
       onOptionClicked,
