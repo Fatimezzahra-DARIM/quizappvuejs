@@ -121,18 +121,27 @@ export default {
         choices: ["A", "b", "c", "D"],
       },
       {
-        question: "what's your name?",
+        question: "what's your fullname?",
         answer: 1,
         choices: ["E", "F", "G", "H"],
       },
       {
-        question: "what's your name?",
+        question: "what's your Age?",
         answer: 3,
         choices: ["1", "2", "3", "4"],
       },
     ];
-    const onQuizStart = () => {
-      currentQuestion.value = questions[questionCounter.value];
+    const loadQuestion = () => {
+      //check if there are more questions to load
+      if (questions.length > questionCounter.value) {
+        // load question
+        currentQuestion.value = questions[questionCounter.value];
+        console.log("current ques", currentQuestion.value);
+        questionCounter.value++;
+      } else {
+        // no question
+        console.log("no question");
+      }
     };
     //methods/functions
     let itemsRef = [];
@@ -140,6 +149,14 @@ export default {
       if (element) {
         itemsRef.push(element);
       }
+    };
+    const clearSelected = (divSelected) => {
+      setTimeout(() => {
+        divSelected.classList.remove("option-correct");
+        divSelected.classList.remove("option-wrong");
+        divSelected.classList.add("option-default");
+        loadQuestion();
+      }, 1000);
     };
     const onOptionClicked = (choice, item) => {
       // console.log(itemsRef[item]);
@@ -155,17 +172,19 @@ export default {
         divContainer.classList.remove("option-default");
       }
       console.log(choice, item);
+      //go next qst
+      clearSelected(divContainer);
     };
     //lifecycle hooks
     onMounted(() => {
-      onQuizStart();
+      loadQuestion();
     });
     //return
     return {
       currentQuestion,
       questions,
       questionCounter,
-      onQuizStart,
+      loadQuestion,
       onOptionClicked,
       optionChosen,
     };
