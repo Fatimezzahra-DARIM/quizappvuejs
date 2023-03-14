@@ -108,6 +108,7 @@ import { onMounted, ref } from "vue";
 export default {
   setup() {
     //data
+    let canClick = true;
     let questionCounter = ref(0);
     const currentQuestion = ref({
       question: "",
@@ -132,6 +133,7 @@ export default {
       },
     ];
     const loadQuestion = () => {
+      canClick = true;
       //check if there are more questions to load
       if (questions.length > questionCounter.value) {
         // load question
@@ -160,20 +162,27 @@ export default {
     };
     const onOptionClicked = (choice, item) => {
       // console.log(itemsRef[item]);
-      const divContainer = itemsRef[item];
-      const optionID = item + 1;
-      if (currentQuestion.value.answer == optionID) {
-        console.log("y r correct");
-        divContainer.classList.add("option-correct");
-        divContainer.classList.remove("option-default");
+      if (canClick) {
+        //select an option
+        const divContainer = itemsRef[item];
+        const optionID = item + 1;
+        if (currentQuestion.value.answer == optionID) {
+          console.log("y r correct");
+          divContainer.classList.add("option-correct");
+          divContainer.classList.remove("option-default");
+        } else {
+          console.log("y r wrong");
+          divContainer.classList.add("option-wrong");
+          divContainer.classList.remove("option-default");
+        }
+        canClick = false;
+        console.log(choice, item);
+        //go next qst
+        clearSelected(divContainer);
       } else {
-        console.log("y r wrong");
-        divContainer.classList.add("option-wrong");
-        divContainer.classList.remove("option-default");
+        //can'tvselect option
+        console.log("can't select option");
       }
-      console.log(choice, item);
-      //go next qst
-      clearSelected(divContainer);
     };
     //lifecycle hooks
     onMounted(() => {
