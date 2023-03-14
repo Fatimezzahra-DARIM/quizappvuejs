@@ -50,26 +50,27 @@
         <!-- Options container -->
         <div class="mt-8">
           <!-- Option container -->
-       <div v-for="(choice,item) in currentQuestion.choices" :key="item">
-           <div
-            class="neumorph-1 option-default bg-gray-100 p-2 rounded-lg relative"
-          >
+          <div v-for="(choice, item) in currentQuestion.choices" :key="item">
             <div
-              class="bg-blue-700 p-1 transform rotate-45 rounded-md h-10 w-10 text-white font-bold absolute right-0 top-0 shadow-md"
+              class="neumorph-1 option-default bg-gray-100 p-2 rounded-lg relative"
+              :ref="optionChosen"
+              @click="onOptionClicked(choice, item)"
             >
-              <p class="transform -rotate-45">+10</p>
-            </div>
-            <div class="rounded-lg font-bold flex p-2">
-              <!-- option ID -->
-              <div class="p-3 rounded-lg">A</div>
-              <!-- option name -->
-              <div class="flex items-center pl-6">darim</div>
+              <div
+                class="bg-blue-700 p-1 transform rotate-45 rounded-md h-10 w-10 text-white font-bold absolute right-0 top-0 shadow-md"
+              >
+                <p class="transform -rotate-45">+10</p>
+              </div>
+              <div class="rounded-lg font-bold flex p-2">
+                <!-- option ID -->
+                <div class="p-3 rounded-lg">{{ item }}</div>
+                <!-- option name -->
+                <div class="flex items-center pl-6">{{ choice }}</div>
+              </div>
             </div>
           </div>
-       </div>
         </div>
 
-     
         <!-- Options container 
         <div class="mt-8">
            Option container 
@@ -103,11 +104,11 @@
 </style>
 
 <script>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 export default {
   setup() {
     //data
-    let questionCounter = ref(0)
+    let questionCounter = ref(0);
     const currentQuestion = ref({
       question: "",
       answer: 1,
@@ -133,12 +134,41 @@ export default {
     const onQuizStart = () => {
       currentQuestion.value = questions[questionCounter.value];
     };
+    //methods/functions
+    let itemsRef = [];
+    const optionChosen = (element) => {
+      if (element) {
+        itemsRef.push(element);
+      }
+    };
+    const onOptionClicked = (choice, item) => {
+      // console.log(itemsRef[item]);
+      const divContainer = itemsRef[item];
+      const optionID = item + 1;
+      if (currentQuestion.value.answer == optionID) {
+        console.log("y r correct");
+        divContainer.classList.add("option-correct");
+        divContainer.classList.remove("option-default");
+      } else {
+        console.log("y r wrong");
+        divContainer.classList.add("option-wrong");
+        divContainer.classList.remove("option-default");
+      }
+      console.log(choice, item);
+    };
     //lifecycle hooks
     onMounted(() => {
       onQuizStart();
     });
     //return
-    return { currentQuestion, questions, questionCounter, onQuizStart };
+    return {
+      currentQuestion,
+      questions,
+      questionCounter,
+      onQuizStart,
+      onOptionClicked,
+      optionChosen,
+    };
   },
 };
 </script>
