@@ -1,10 +1,15 @@
 <template>
   <main class="flex h-screen items-center justify-center bg-gray-100">
+    <!-- quiz overlay -->
+    <div v-if="start">
+      <QuizCompleteOverlay @showQuiz="start = !start" />
+    </div>
+
     <!-- Quiz container -->
     <div
+      v-else
       class="bg-white flex-none container relative shadow-lg rounded-lg px-12 py-6"
     >
-      <!-- <img src="@/assets/images/backgrounquiz.avif" alt="" class="absolute top-0 left-0" /> -->
       <!-- Contents -->
       <div class="relative z-20">
         <!-- Score container -->
@@ -26,30 +31,6 @@
         >
           <div class="bg-white p-5">{{ currentQuestion.question }}</div>
         </div>
-        <!-- Options container 
-        <div class="mt-8">
-           Option container 
-          <div class="neumorph-1 bg-gray-100 p-2 rounded-lg">
-            <div class="bg-white rounded-lg font-bold flex p-2">
-               option ID 
-              <div class="bg-gray-400 p-3 rounded-lg">A</div>
-               option name 
-              <div class="flex items-center pl-6">Fatime</div>
-            </div>
-          </div>
-        </div> -->
-        <!-- Options container
-        <div class="mt-8">
-          Option container
-          <div class="neumorph-1 bg-gray-100 p-2 rounded-lg">
-            <div class="bg-red-600 rounded-lg font-bold flex p-2 text-white">
-              option ID
-              <div class="bg-gray-800 p-3 rounded-lg">B</div>
-              option name
-              <div class="flex items-center pl-6">ezzahra</div>
-            </div>
-          </div>
-        </div> -->
         <!-- Options container -->
         <div class="mt-8">
           <!-- Option container -->
@@ -73,19 +54,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Options container 
-        <div class="mt-8">
-           Option container 
-          <div class="neumorph-1 bg-gray-100 p-2 rounded-lg">
-            <div class="bg-white rounded-lg font-bold flex p-2">
-               option ID 
-              <div class="bg-gray-400 p-3 rounded-lg">D</div>
-               option name 
-              <div class="flex items-center pl-6">best</div>
-            </div>
-          </div>
-        </div> -->
         <!-- Progress indicator container -->
         <div class="mt-8 text-center">
           <div class="h-1 w-12 bg-gray-800 rounded-full mx-auto"></div>
@@ -110,9 +78,12 @@
 
 <script>
 import { onMounted, ref } from "vue";
+import QuizCompleteOverlay from "./components/QuizCompleteOverlay.vue";
 export default {
   setup() {
     //data
+    let start = ref(true);
+    // let start = true;
     let canClick = true;
     let timer = ref(100);
     let questionCounter = ref(0);
@@ -151,6 +122,10 @@ export default {
       } else {
         // no question
         console.log("no question");
+        // console.log(canClick);
+        // console.log(!canClick);
+        // this.start = !this.start ;
+        start.value = !start.value;
       }
     };
     //methods/functions
@@ -160,6 +135,7 @@ export default {
         itemsRef.push(element);
       }
     };
+
     const clearSelected = (divSelected) => {
       setTimeout(() => {
         divSelected.classList.remove("option-correct");
@@ -219,7 +195,11 @@ export default {
       loadQuestion,
       onOptionClicked,
       optionChosen,
+      start,
     };
+  },
+  components: {
+    QuizCompleteOverlay,
   },
 };
 </script>
